@@ -1,0 +1,40 @@
+{
+  "data": [
+    {
+      "title": "Frontend Developer",
+      "description": "A Front-end developer is a type of web developer who specializes in building the user interface (UI) and user experience (UX) of a website or web application. Their primary focus is on creating the part of the website that the user interacts with directly. The roles and responsibilities of a Front-end developer can vary depending on the project and the organization they work for, but generally include the following:  Creating the UI design: Front-end developers work closely with UX designers to create the look and feel of a website or application. They are responsible for implementing the visual and interactive elements of the design using HTML, CSS, and JavaScript.  Developing the front-end code: Once the UI design is approved, Front-end developers are responsible for coding the front-end of the website or application. They use various programming languages and frameworks such as React, Angular, or Vue.js to create interactive and responsive user interfaces.  Optimizing website performance: Front-end developers must ensure that the website or application is optimized for speed and performance. This includes optimizing images, minifying CSS and JavaScript files, and reducing server requests.  Testing and debugging: Front-end developers are responsible for testing the website or application to ensure that it works as expected. They must also identify and fix any bugs or issues that arise.  Collaborating with other developers: Front-end developers must work closely with back-end developers and other members of the development team to ensure that the front-end integrates seamlessly with the back-end.  Staying up-to-date with industry trends: Front-end developers must stay up-to-date with the latest trends and best practices in web development. This includes learning new programming languages, frameworks, and tools.  Overall, the role of a Front-end developer is crucial in creating an engaging and user-friendly web experience for users.",
+      "relatedTitles": [
+        "UI Developer",
+        "UX Developer",
+        "Full-stack Developer",
+        "Web Developer"
+      ],
+      "learningPaths": [
+        {
+          "React": {
+            "jobPosts": 41,
+            "projectTeams": 11,
+            "competitions": 4,
+            "assesments": 4
+          }
+        },
+        {
+          "Angular": {
+            "jobPosts": 41,
+            "projectTeams": 11,
+            "competitions": 4,
+            "assesments": 4
+          }
+        },
+        {
+          "Vue": {
+            "jobPosts": 41,
+            "projectTeams": 11,
+            "competitions": 4,
+            "assesments": 4
+          }
+        }
+      ]
+    }
+  ]
+}

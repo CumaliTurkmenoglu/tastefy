@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Firma Düzenle</title>
+</head>
+<body>
+    <form method="post">
+        {{ form.hidden_tag() }}
+        {{ form.name.label }}
+        {{ form.name(value=form.name.default) }}
+        {{ form.company_update }}
+
+    </form>
+</body>
+</html>

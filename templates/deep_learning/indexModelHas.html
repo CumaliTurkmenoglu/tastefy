@@ -1,0 +1,297 @@
+{% extends 'main/base.html' %}
+
+
+{% block title %} Modeller {% endblock %}
+
+
+
+{% block head %}
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" integrity="sha512-mSYUmp1HYZDFaVKK//63EcZq4iFWFjxSL+Z3T/aCt4IO9Cejm03q3NKKYN6pFQzY0SBOr8h+eCIAZHPXcpZaNw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js'></script>
+        <script src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js'></script>
+
+{% endblock %}
+{% block body %}
+
+    <div id="hizala" style="display: flex; flex-direction: row;">
+        <div class="row col-md-4">
+            {% if message %}
+                {% if message['success'] %}
+                    <div class="alert alert-success alert-dismissible fade show d-flex align-items-center col-md-12" role="alert" style="height: 10%">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <i class="mdi mdi-checkbox-marked-circle font-32"></i><strong class="pr-1">{{ message['msg'] }}</strong>
+                    </div>
+                {% else %}
+                    <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center col-md-12" role="alert" style="height: 10%">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <i class="mdi mdi-close-circle font-32"></i><strong class="pr-1">{{ message['msg'] }}</strong>
+                    </div>
+                {% endif %}
+            {% endif %}
+            <div class="col-md-12 col-xl-12">
+                <div class="card m-b-30">
+                    <div class="card-body">
+
+                        <div class="row">
+                             <form class="w-100" method="post">
+                                 {{ form.hidden_tag() }}
+
+                                <div class="form-group mb-0 col-sm-12" style="text-align:center; display:flex; flex-direction:row;">
+
+                                       <!-- <button id="modelButton" data-toggle="modal" data-target=".bd-example-modal-form"  type="button" class="btn btn-success waves-effect waves-light">
+                                                Modeller
+                                        </button> -->
+
+                                    <button id='activeParameters' type="button" class="btn btn-warning waves-effect waves-light ml-1">
+                                        Alanları Etkinleştir
+                                    </button>
+
+
+                                     <div class="modal fade bd-example-modal-form" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog modal-lg">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="exampleModalform">Eğitilmiş Modeller</h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true" class="text-dark">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+
+                                                            <div class="row">
+                                                                <div class="col-md-12">
+                                                                    <div class="form-group">
+                                                                        <table
+                                                                            class="table table-striped table-bordered dt-responsive nowrap col-md-11 col-lg-11"
+                                                                            style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                                                            <thead>
+                                                                                <tr>
+                                                                                    <th>Model</th>
+                                                                                    <th>Eğitim Tarihi</th>
+                                                                                    <th>Eğitim Saati</th>
+                                                                                    <th>Mape</th>
+                                                                                    <th>İşlemler</th>
+
+                                                                                </tr>
+                                                                            </thead>
+                                                                            <tbody>
+                                                                                {% for trainedModel in range(trained_model | length) %}
+                                                                                <tr>
+                                                                                <td>{{ trained_model[trainedModel].ModelLink.split('-')[1] }}</td>
+                                                                                <td>{{ trained_model[trainedModel].TrainedDate  }}</td>
+                                                                                <td>{{ trained_model[trainedModel].TrainedTime }}</td>
+                                                                                <td>{{ mapes[trainedModel].Mape }}</td>
+                                                                                <td><a class="btn btn-success waves-effect waves-light"  href="{{url_for('deeplearning.useModel', sf_id = trained_model[trainedModel].StoreAndForwardId)}}">Kullan</a></td>
+                                                                                </tr>
+                                                                                {% endfor %}
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+
+                                                    </div>
+                                                    <div class="modal-footer">
+
+                                                        <button type="button" class="btn btn-raised btn-danger" data-dismiss="modal">Kapat</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                 <!-- Sekme alanı -->
+                                 <div class="col-xl-12 mt-2 border">
+
+                                    <div class="tab-content">
+                                         <div class="tab-pane p-3 active" id="features" role="tabpanel">
+
+
+                                             <div class="form-group mb-0 mt-4">
+                                                <label>Tahmin Edilecek Tarih</label>
+                                                <div>
+                                                    <div class="input-daterange input-group" id="date-range">
+                                                        {{ form.testDay(disabled='disabled',  class="form-control", placeholder="mm/dd/yyyy", id="datepicker1-autoclose") }}
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                         </div>
+                                        <div class="form-group mb-0 mt-4">
+                                                <label>Kaç Saatlik Tahmin</label>
+                                                    <div class="card" style="margin-top: -4rem !important">
+                                                        <div class="card-body">
+                                                            <h4 class="header-title mt-0">{{ form.selectHours.label}}</h4>
+                                                            {{ form.selectHours(disabled='disabled', class= "select2 form-control mb-3 custom-select",
+                                                                                style="width: 100%; height:36px;") }}
+                                                        </div>
+                                                    </div>
+                                            </div>
+
+
+                                             <div class="form-group mt-5 col-sm-12" style="text-align:center;">
+                                                {{ form.gonder(disabled='disabled',class="btn btn-info form-control")}}
+                                             </div>
+                                    </div>
+
+                                 </div>
+
+
+                             </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row col-md-8">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body">
+                                {% if mape is defined %}
+                                <div class="row">
+                                    <div class="col-md-5 col-xl-3">
+                                        <div class="card mini-stat">
+                                            <div class="mini-stat-icon text-right">
+                                                <i class="mdi mdi-chart-bar"></i>
+                                            </div>
+                                            <div class="p-4">
+                                                <h6 class="text-uppercase mb-3">Metrikler</h6>
+                                                <div class="float-left mt-4">
+                                                    <p><strong>MAPE: </strong> <span class="badge badge-success">{{mape}}</span></p>
+                                                    <!-- <p><strong>MAE: </strong> <span class="badge badge-warning">7.68</span></p> -->
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+
+
+                                <canvas id="multipleLineChart" width="100%"></canvas>
+
+                                <div class="d-flex flex-direction-row">
+                                    <div id='today' class="w-50">
+                                         <table id="datatable-buttons"
+                                                class="table table-striped table-bordered dt-responsive nowrap col-md-11 col-lg-11 mt-2"
+                                                style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                            <thead>
+                                                <tr>
+                                                    <th>Tarih</th>
+                                                    <th>Tahmini Deger</th>
+
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+
+                                                {% for forecast in forecasts %}
+                                                <tr>
+                                                    <td>{{forecast['Tarih']}}</td>
+                                                    <td>{{forecast['TahminiDeger']}}</td>
+                                                </tr>
+                                                {% endfor %}
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div> <!-- end col -->
+                </div> <!-- end row -->
+            </div>
+    </div>
+
+
+{%  endblock %}
+
+
+{% block script %}
+
+    <script src={{url_for('static',filename="chosen/docsupport/jquery-3.2.1.min.js")}} type="text/javascript"></script>
+    <script src={{url_for('static',filename="chosen/chosen.jquery.js")}} type="text/javascript"></script>
+    <script src={{url_for('static',filename="chosen/docsupport/prism.js")}} type="text/javascript" charset="utf-8"></script>
+    <script src={{url_for('static',filename="chosen/docsupport/init.js") }} type="text/javascript" charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script>
+
+
+
+
+    $('#datepicker1-autoclose').datepicker({
+                format : 'mm/dd/yyyy',
+                startDate: $('#date-range')[0].children[1].value,
+                minDate:  $('#date-range')[0].children[1].value,
+                orientation:'bottom',
+
+            });
+
+
+    </script>
+
+    <script>$('#date_parse_chosen').css('width','100%')</script>
+
+
+</script>
+
+<script>
+    var tarih = [];
+    var gercekdeger = [];
+    var tahmindeger = [];
+
+    {% for i in notnulldata %}
+        tarih.push(moment(new Date( {{(i['Tarih']|string())[:4]|int}},
+            {{(i['Tarih']|string())[5:7]|int}},
+            {{(i['Tarih']|string())[8:10]|int}},
+            {{(i['Tarih']|string())[11:13]|int }})
+        ).format('YYYY-MM-DD HH'))
+        gercekdeger.push({{i['GercekDeger']}})
+        tahmindeger.push({{i['TahminiDeger']}})
+    {% endfor %}
+  const ctx = document.getElementById('multipleLineChart').getContext('2d');
+
+  const chart = new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels: tarih,
+    datasets: [{
+        label: "Gerçek Değer",
+        data: gercekdeger,
+        borderWidth: 1,
+        fill: false,
+        borderColor: 'red'
+      },
+      {
+        label: "Tahmini Değer",
+        data: tahmindeger,
+        borderWidth: 1,
+        fill: false,
+        borderColor: 'green'
+      }
+    ]
+  },
+  options: {
+    scales: {
+      yAxes: [{
+        ticks: {
+          beginAtZero: true
+        }
+      }]
+    }
+  }
+});
+
+</script>
+
+{% endblock %}
+
+

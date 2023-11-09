@@ -1,0 +1,114 @@
+{% extends 'main/base.html' %}
+
+
+{% block title %} Kategoriler {% endblock %}
+
+
+{% block body %}
+
+    <div class="modal fade" id="modal-Sonuc" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modal-label-uyari"></h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Tamam</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Modal Sil -->
+    <div class="modal fade" id="modal-sil" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modal-label">Model Silme Onayı </h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" id="silme-mesaji">
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">İptal</button>
+            <button type="button" id="btn-sil-onay" class="btn btn-danger">Sil</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <a href="{{ url_for('category.kategoriEkle') }}" class="btn btn-success mb-2">Yeni Kategori Ekle</a>
+    <table
+        class="table table-striped table-bordered dt-responsive nowrap col-md-5 col-lg-5"
+        style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+        <thead>
+            <tr>
+                <th>Kategori</th>
+                <th>İşlemler</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for kategori in categories %}
+                <tr>
+                    <td style="width:10%;">{{ kategori.Name }}</td>
+                    <td style="width:20%;">
+                        <a href="{{ url_for('category.kategoriDuzenle',id_=kategori.Id) }}" class="btn btn-warning kategori-duzenle" >Düzenle</a>
+                        <a class="btn btn-danger kategori-sil" data-kategoriadi = '{{ kategori.Name }}' data-kategoriKodu = '{{ kategori.Id }}'>Sil</a>
+                    </td>
+                </tr>
+
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% endblock %}
+
+
+{% block script %}
+    <script>
+
+
+
+        $('.kategori-sil').click(function (){
+            kategori_kodu = $(this).attr('data-kategorikodu');
+            kategori_adi  = $(this).attr('data-kategoriadi');
+
+            $('#silme-mesaji').html(kategori_adi + ' isimli kategoriyi silmek istiyor musunuz?');
+
+            $('#modal-sil').modal();
+
+            $('#btn-sil-onay').click(function (){
+                $('#modal-sil').modal('hide');
+                $.post("{{url_for('category.kategoriSil')}}",
+                    {
+                        id: kategori_kodu,
+                        csrf_token : "{{ csrf_token() }}"
+                    },
+                    function (sonuc,htmlkodu){
+                        if (sonuc['Status'] == 'Success')
+                        {
+
+                            $('#modal-label-uyari').html(kategori_adi + ' isimli kategori silindi')
+                            $('#modal-Sonuc').modal()
+                            location.reload()
+                        }else
+                        {
+                            $('#modal-label-uyari').html(kategori_adi + ' isimli kategori silinemedi')
+                             $('#modal-Sonuc').modal()
+                        }
+
+                });
+            });
+
+
+        });
+ </script>
+{% endblock %}

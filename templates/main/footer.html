@@ -1,0 +1,140 @@
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-12">
+                        © 2022 HITSOFT - ARGE
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- End Footer -->
+
+
+        <!-- jQuery  -->
+        <script src="{{url_for('static',filename='assets/js/jquery.min.js')}}"></script>
+        <script src="{{url_for('static',filename='assets/js/bootstrap.bundle.min.js')}}"></script>
+        <script src="{{url_for('static',filename='assets/js/modernizr.min.js')}}"></script>
+        <script src="{{url_for('static',filename='assets/js/detect.js')}}"></script>
+        <script src="{{url_for('static',filename='assets/js/fastclick.js')}}"></script>
+        <script src="{{url_for('static',filename='assets/js/jquery.slimscroll.js')}}"></script>
+        <script src="{{url_for('static',filename='assets/js/jquery.blockUI.js')}}"></script>
+        <script src="{{url_for('static',filename='assets/js/waves.js')}}"></script>
+        <script src="{{url_for('static',filename='assets/js/jquery.nicescroll.js')}}"></script>
+        <script src="{{url_for('static',filename='assets/js/jquery.scrollTo.min.js')}}"></script>
+
+        <script src="{{url_for('static',filename='assets/plugins/metro/MetroJs.min.js')}}"></script>
+        <script src="{{url_for('static',filename='assets/plugins/jvectormap/jquery-jvectormap-2.0.2.min.js')}}">
+        </script>
+        <script src="{{url_for('static',filename='assets/plugins/jvectormap/jquery-jvectormap-world-mill-en.js')}}">
+        </script>
+        <script src="{{url_for('static',filename='assets/plugins/sparkline-chart/jquery.sparkline.min.js')}}"></script>
+        <script src="{{url_for('static',filename='assets/plugins/morris/morris.min.js')}}"></script>
+        <script src="{{url_for('static',filename='assets/plugins/raphael/raphael-min.js')}}"></script>
+        <script src="{{url_for('static',filename='assets/pages/dashboard.js')}}"></script>
+
+
+        <!-- Required datatable js -->
+        <script src="{{url_for('static',filename='assets/plugins/datatables/jquery.dataTables.min.js')}}"></script>
+        <script src="{{url_for('static',filename='assets/plugins/datatables/dataTables.bootstrap4.min.js')}}"></script>
+        <!-- Buttons examples -->
+        <script src="{{url_for('static',filename='assets/plugins/datatables/dataTables.buttons.min.js')}}"></script>
+        <script src="{{url_for('static',filename='assets/plugins/datatables/buttons.bootstrap4.min.js')}}"></script>
+        <script src="{{url_for('static',filename='assets/plugins/datatables/jszip.min.js')}}"></script>
+        <script src="{{url_for('static',filename='assets/plugins/datatables/pdfmake.min.js')}}"></script>
+        <script src="{{url_for('static',filename='assets/plugins/datatables/vfs_fonts.js')}}"></script>
+        <script src="{{url_for('static',filename='assets/plugins/datatables/buttons.html5.min.js')}}"></script>
+        <script src="{{url_for('static',filename='assets/plugins/datatables/buttons.print.min.js')}}"></script>
+        <script src="{{url_for('static',filename='assets/plugins/datatables/buttons.colVis.min.js')}}"></script>
+
+        <!-- Responsive-table-->
+        <script src="{{url_for('static',filename='assets/plugins/RWD-Table-Patterns/dist/js/rwd-table.min.js')}}"></script>
+        <script src="{{url_for('static',filename='assets/pages/re-table.js')}}"></script>
+
+        <!-- Datatable init js -->
+        <script src="{{url_for('static',filename='assets/pages/datatables.init.js')}}"></script>
+
+        <!--Chartist Chart-->
+        <script src="{{url_for('static',filename='assets/plugins/chartist/js/chartist.min.js')}}"></script>
+        <script src="{{url_for('static',filename='assets/plugins/chartist/js/chartist-plugin-tooltip.min.js')}}"></script>
+
+
+
+
+        <!-- App js -->
+        <script src="{{url_for('static',filename='assets/js/app.js')}}"></script>
+        <script src="{{url_for('static',filename='assets/pages/dashboard.js')}}"></script>
+
+
+        <script>
+
+        $('.custom-control-input').prop('disabled',true);
+        $('#StoreAndForward').click(function() {
+            checked = $("input[type=checkbox]:checked").length;
+            if(!checked) {
+                alert("Eğitim için en az bir tane öznitelik seçilmelidir.");
+                return false;
+            }
+            });
+
+
+        $('#activeParameters').click(function(){
+            $('.form-control').prop('disabled',false);
+            $('#StoreAndForward').prop('disabled',false);
+            $('.custom-control-input').prop('disabled',false);
+        });
+
+
+        if($("#ModelSecimi").val() != "CONVLSTM")
+        {
+             $('#Filter').css('display','None');
+            $('#KernelSize').css('display','None');
+        }
+
+        $('#ModelSecimi').change(function(){
+            var val = this.value;
+            if (val != 'CONVLSTM'){
+                $('#Filter').css('display','None');
+                $('#KernelSize').css('display','None');
+            }else{
+                $('#Filter').css('display','block');
+                $('#KernelSize').css('display','block');
+            }
+        });
+
+
+
+        var table2 = $('#datatable-buttons2').DataTable({
+            lengthChange: false,
+            "bFilter": false,
+            "bInfo": false,
+            "language":
+            {
+                "url": "//cdn.datatables.net/plug-ins/1.11.5/i18n/tr.json"
+            }
+
+        });
+        table2.buttons().container()
+            .appendTo('#datatable-buttons2_wrapper .col-md-6:eq(0)');
+
+
+        new Chartist.Line('#chart-with-area', {
+          labels:  [0,1,2,3,4],
+          series: [
+                [1599.99,1487.71,1387.71,1387.72,1429.99]
+          ]
+        }, {
+          low: 0,
+          showArea: true,
+          plugins: [
+            Chartist.plugins.tooltip()
+          ]
+        });
+
+
+
+
+        </script>
+    </body>
+</html>

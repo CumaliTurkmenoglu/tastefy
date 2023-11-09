@@ -1,0 +1,14 @@
+{% extends 'main/base.html' %}
+
+
+{% block title %} Kategori Ekle {% endblock %}
+
+{% block body %}
+    <form method="post">
+        {{ form.hidden_tag() }}
+        {{ form.name.label }}
+        {{ form.name(value=form.name.default) }}
+        {{ form.kategori_guncelle }}
+
+    </form>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends 'main/base.html' %}
+
+
+{% block title %} Kategori Düzenle {% endblock %}
+
+
+{% block body %}
+
+    <form method="post">
+        {{ form.hidden_tag() }}
+
+        {{ form.name.label }}
+        {{ form.name }}
+        {{ form.kategori_ekle }}
+
+    </form>
+{% endblock %}
