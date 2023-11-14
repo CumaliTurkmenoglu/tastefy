@@ -5,8 +5,8 @@ from flask_wtf.csrf import CSRFProtect
 from flask_sqlalchemy import SQLAlchemy
 from dbenv import DB_NAME, DB_USERNAME,DB_PASSWORD,HOST,PORT #SSH_USERNAME,SSH_PASSWORD,REMOTE_BIND_ADRESS
 from datetime import datetime
-from flask_bootstrap import Bootstrap
-from flask_marshmallow import Marshmallow
+#from flask_bootstrap import Bootstrap
+#from flask_marshmallow import Marshmallow
 from flask_jwt_extended import JWTManager
 
 import mysql.connector  # Import the MySQL connector library
@@ -46,8 +46,6 @@ migrate = Migrate(app,db)
 app.register_blueprint(mod_controller ,url_prefix='/controller')
 app.register_blueprint(mod_user,url_prefix='/auth')
 app.register_blueprint(mod_menu,url_prefix='/menu')
-
-import pandas as pd
 
 from flask import jsonify
 from mod_foods.model import getFoodsByCategory
