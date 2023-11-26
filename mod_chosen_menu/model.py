@@ -6,12 +6,23 @@ class ChosenMenu(db.Model):
     feedback = db.Column(db.Integer)
 
 def getChosenMenuIdsByUserId(id):
-    db.metadata.clear()
-    menu = db.session.query(ChosenMenu.menuId,ChosenMenu.userId).filter(ChosenMenu.userId == id).all()
-    #db.session.query(ChosenMenu.menuId,ChosenMenu.userId).all()[0]
-    return menu
+    try:
+        db.metadata.clear()
+        menu = db.session.query(ChosenMenu.menuId,ChosenMenu.userId).filter(ChosenMenu.userId == id).all()
+        #db.session.query(ChosenMenu.menuId,ChosenMenu.userId).all()[0]
+        return menu
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error: {e}")
+        return False
+
 
 def getChosenMenuById(menuId):
-    db.metadata.clear()
-    menus = ChosenMenu.query.filter(ChosenMenu.menuId == menuId).first()
-    return menus
+    try:
+        db.metadata.clear()
+        menus = ChosenMenu.query.filter(ChosenMenu.menuId == menuId).first()
+        return menus
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error: {e}")
+        return False

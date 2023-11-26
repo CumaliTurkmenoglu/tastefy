@@ -1,7 +1,6 @@
 from flask import Blueprint,request,jsonify,abort
 from flask_jwt_extended import jwt_required,get_jwt_identity
-import numpy as np
-import pandas as pd
+
 
 mod_controller = Blueprint('control',__name__)
 
@@ -43,7 +42,7 @@ def getUnlabelledFoods():
 @jwt_required()
 def getFoods():
     if request.method == "POST":
-        from mod_foods.model import getFoodsByCategory
+        from mod_foods.model import get_foods_by_category
         import json
         req_json = request.json
         current_user = get_jwt_identity()
@@ -51,7 +50,7 @@ def getFoods():
         foodGroupId = req_json['foodGroupId']
 
         dict_ = {'Data': []}
-        for i in getFoodsByCategory(foodGroupId):
+        for i in get_foods_by_category(foodGroupId):
             foods_dict = {'id':'',
                             'name':'',
                             'foodGroupId':'',
@@ -91,9 +90,9 @@ def getFoods():
 
 @mod_controller.route('/set_food_preference', methods=['POST'])
 @jwt_required()
-def setFoodPreference():
+def set_food_preference():
     if request.method == "POST":
-        from mod_user_foods.model import  setFoodPreference
+        from mod_user_foods.model import  set_food_preference
         import json
         req_json = request.json
         current_user = get_jwt_identity()
@@ -101,7 +100,7 @@ def setFoodPreference():
         userId = req_json['userId']
         foodId = req_json['foodId']
         preference = req_json['preference']
-        insert=setFoodPreference(userId,foodId,preference)
+        insert=set_food_preference(userId,foodId,preference)
         if insert:
             return jsonify({'Status': 'Success',
                             'Message': 'The preference has been set for the food.'})

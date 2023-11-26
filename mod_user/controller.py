@@ -10,28 +10,47 @@ auth = HTTPBasicAuth()
 def register():
     if request.method == "POST":
         req_jeson = request.json
+        username = req_jeson['username']
+        password = req_jeson['password']
+        type = 1
+        from mod_user.model import getUserByUserName
+        from mod_foods.model import get_foods_by_case_id
+        if bool(getUserByUserName(username)):
+            return jsonify(message="The email is already registered"), 409
+        else:
+            from mod_user.model import insert
+            id=insert(username, generate_password_hash(password, method='SHA256'),type)
+            if id:
+                try:
+                    from mod_user_foods.model import insert_user_foods
+                    foods= get_foods_by_case_id(1)
+                    insert_user_foods(id, username, foods)
+                    return jsonify(message='User added succesfully'), 201
+                except:
+                    return "nooo"
+            else:
+                return abort(404)
+
+
+@mod_user.route('/updateuser', methods=['POST'])
+def update_user():
+    if request.method == "POST":
+        req_jeson = request.json
         name = req_jeson['name']
         surname = req_jeson['surname']
         username = req_jeson['username']
-        password = req_jeson['password']
-        type = req_jeson['type']
-        date = req_jeson['date']
         age = req_jeson['age']
         gender = req_jeson['gender']
         height = req_jeson['height']
         weight = req_jeson['weight']
 
         from mod_user.model import getUserByUserName
-        if bool(getUserByUserName(username)):
-            return jsonify(message="The email is already registered"), 409
-
+        from mod_user.model import update_user
+        update=update_user(username, name,surname,age,gender,height,weight)
+        if update:
+            return jsonify(message='User updated succesfully'), 201
         else:
-            from mod_user.model import insert
-            add=insert(name, surname, username, generate_password_hash(password, method='SHA256'),type,date,age,gender,height,weight)
-            if add:
-                return jsonify(message='User added succesfully'), 201
-            else:
-                return abort(404)
+            return abort(404)
 
 @mod_user.route('/login', methods=['GET','POST'])
 def login():

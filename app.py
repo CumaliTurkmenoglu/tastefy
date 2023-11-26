@@ -48,13 +48,13 @@ app.register_blueprint(mod_user,url_prefix='/auth')
 app.register_blueprint(mod_menu,url_prefix='/menu')
 
 from flask import jsonify
-from mod_foods.model import getFoodsByCategory
+from mod_foods.model import get_foods_by_category
 @app.route('/')
 def index():
     try:
         # Start a transaction
         with db.session.begin_nested():
-            foods = getFoodsByCategory(1)
+            foods = get_foods_by_category(1)
             return jsonify({'Data': {'Name': foods.name}})
     except Exception as e:
         # Handle exceptions and roll back the transaction
