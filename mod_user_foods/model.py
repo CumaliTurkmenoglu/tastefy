@@ -76,7 +76,6 @@ def set_food_preference(userId, foodId, preference):
             user_food.userId= userId
             user_food.foodId= foodId
             user_food.preference= preference
-#            db.session.add(uf)
             db.session.commit()
             return True
         except Exception as e:
