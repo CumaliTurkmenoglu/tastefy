@@ -10,28 +10,48 @@ auth = HTTPBasicAuth()
 def register():
     if request.method == "POST":
         req_jeson = request.json
-        name = req_jeson['name']
-        surname = req_jeson['surname']
         username = req_jeson['username']
         password = req_jeson['password']
-        type = req_jeson['type']
-        date = req_jeson['date']
+        type = 1
+        from mod_user.model import getUserByUserName
+        from mod_foods.model import get_foods_by_case_id
+        if bool(getUserByUserName(username)):
+            return jsonify(message="The email is already registered"), 409
+        else:
+            from mod_user.model import insert
+            id=insert(username, generate_password_hash(password, method='SHA256'),type)
+            if id:
+                try:
+                    from mod_user_foods.model import insert_user_foods
+                    foods= get_foods_by_case_id(1)
+                    insert_user_foods(id, username, foods)
+                    return jsonify(message='User added succesfully'), 201
+                except:
+                    return "nooo"
+            else:
+                return abort(404)
+
+@mod_user.route('/updateuser', methods=['POST'])
+@jwt_required()
+def update_user():
+    if request.method == "POST":
+        req_jeson = request.json
+        name = req_jeson['name']
+        surname = req_jeson['surname']
         age = req_jeson['age']
         gender = req_jeson['gender']
         height = req_jeson['height']
         weight = req_jeson['weight']
 
+        current_user = protected(get_jwt_identity())
+        user_id=current_user[0].json["user_id"]
         from mod_user.model import getUserByUserName
-        if bool(getUserByUserName(username)):
-            return jsonify(message="The email is already registered"), 409
-
+        from mod_user.model import update_user
+        update=update_user(user_id, name,surname,age,gender,height,weight)
+        if update:
+            return jsonify(message='User updated succesfully'), 201
         else:
-            from mod_user.model import insert
-            add=insert(name, surname, username, generate_password_hash(password, method='SHA256'),type,date,age,gender,height,weight)
-            if add:
-                return jsonify(message='User added succesfully'), 201
-            else:
-                return abort(404)
+            return abort(404)
 
 @mod_user.route('/login', methods=['GET','POST'])
 def login():
@@ -60,15 +80,13 @@ def login():
         return jsonify(message="Bad Email or Password!"), 401
 
 
-
-
 @mod_user.route("/getuser", methods=["POST"])
 @jwt_required()
 def get_user():
     from mod_user.model import getUserById
-    req_jeson = request.json
-    id = req_jeson['id']
-    return jsonify(str(getUserById(id)))
+    current_user=protected(get_jwt_identity())
+    user=getUserById(current_user[0].json["user_id"])
+    return jsonify(name=user.name, surname=user.surname, age=user.age, gender=user.gender, height=user.height, weight=user.weight).json
 
 
 @mod_user.route("/refresh", methods=["POST"])
@@ -78,12 +96,9 @@ def refresh():
     access_token = create_access_token(identity=identity)
     return jsonify(access_token=access_token)
 
-@mod_user.route("/protected", methods=["GET"])
-@jwt_required()
-def protected():
-    # Access the identity of the current user with get_jwt_identity
-    current_user = get_jwt_identity()
-    return jsonify(logged_in_as=current_user), 200
+def protected(current_user):
+    username, role, userId = current_user.split('*')
+    return jsonify(username=username, user_role=role, user_id=userId), 200
 
 #
 # @mod_user.route("/verify", methods=["GET"])

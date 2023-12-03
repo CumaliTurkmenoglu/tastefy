@@ -13,45 +13,75 @@ class Menus(db.Model):
 
 
 def getUnlabelledMenusByUserId( userId):
-    db.metadata.clear()
-    from sqlalchemy import and_,func
-    from mod_chosen_menu.model import getChosenMenuIdsByUserId,ChosenMenu
-    menus = Menus.query.join(ChosenMenu,ChosenMenu.menuId == Menus.id ).filter(Menus.userId==userId).all()
-    #Menus.query.filter(and_(Menus.userId == userId, ~Menus.id.in_(getChosenMenuIdsByUserId(userId)))).all()
-    if menus:
-        return menus
-    else:
-        return ""
+    try:
+        db.metadata.clear()
+        from sqlalchemy import and_,func
+        from mod_chosen_menu.model import getChosenMenuIdsByUserId,ChosenMenu
+        menus = Menus.query.join(ChosenMenu,ChosenMenu.menuId == Menus.id ).filter(Menus.userId==userId).all()
+        #Menus.query.filter(and_(Menus.userId == userId, ~Menus.id.in_(getChosenMenuIdsByUserId(userId)))).all()
+        if menus:
+            return menus
+        else:
+            return ""
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error: {e}")
+        return False
+
 
 def getRandomMenuByUserId(userId):
-    import random
-    tries = 0
-    toss = random.randint(1, 2)
-    experiment = 'UserCaseStudyExperiment_NSGAII_Diet_Problem_' + userId
-    if toss == 2:
-        experiment = 'UserCaseStudyExperiment_NSGAII_Diet_Problem_dummy' + userId
-    menu = getMenuByUserId(experiment,userId)
-    return menu
+    try:
+        import random
+        tries = 0
+        toss = random.randint(1, 2)
+        experiment = 'UserCaseStudyExperiment_NSGAII_Diet_Problem_' + userId
+        if toss == 2:
+            experiment = 'UserCaseStudyExperiment_NSGAII_Diet_Problem_dummy' + userId
+        menu = getMenuByUserId(experiment,userId)
+        return menu
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error: {e}")
+        return False
+
 
 def getMenuByUserId(experiment, userId):
-    db.metadata.clear()
-    from sqlalchemy import and_
-    from mod_chosen_menu.model import getChosenMenuIdsByUserId
-    menus = Menus.query.filter(and_(Menus.userId == userId, Menus.experiment == experiment, ~Menus.id.in_(getChosenMenuIdsByUserId(userId)))).first()
-    if menus:
-        return menus
-    else:
-        return ""
+    try:
+        db.metadata.clear()
+        from sqlalchemy import and_
+        from mod_chosen_menu.model import getChosenMenuIdsByUserId
+        menus = Menus.query.filter(and_(Menus.userId == userId, Menus.experiment == experiment, ~Menus.id.in_(getChosenMenuIdsByUserId(userId)))).first()
+        if menus:
+            return menus
+        else:
+            return ""
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error: {e}")
+        return False
+
 
 def getMenuById(id):
-    db.metadata.clear()
-    foods = Menus.query.filter(Menus.id == id).first()
-    return foods
+    try:
+        db.metadata.clear()
+        foods = Menus.query.filter(Menus.id == id).first()
+        return foods
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error: {e}")
+        return False
+
 
 def getFoodNamesByMenuId(menuId):
-    db.metadata.clear()
-    menus = Menus.query.filter(Menus.id == menuId).all()
-    return menus
+    try:
+        db.metadata.clear()
+        menus = Menus.query.filter(Menus.id == menuId).all()
+        return menus
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error: {e}")
+        return False
+
 
 
 def extractObjectives(obj : str):
@@ -69,9 +99,9 @@ def extractObjectives(obj : str):
 
 def extractFoodNamesAndObjValues(menu):
     import json
-    from mod_foods.model import getFoodById, getFoodByIds
+    from mod_foods.model import get_food_by_id, get_food_by_ids
     food_ids = [int(id) for id in menu.foodIds.strip("'").split(',')]
-    foods_with_links= getFoodByIds(food_ids)
+    foods_with_links= get_food_by_ids(food_ids)
     food_items = menu.foodNames.rstrip(', ').split(', ')
     foods = []
     for i, food_item in enumerate(food_items):
@@ -103,7 +133,7 @@ def extractNutrientValues(menu):
         nutrient_data = {}
         import re
         import json
-        match = re.match(r'.*#.* (\w+) :>>>>> (\d+\.\d+) LL: (\d+\.\d+) ---  UL: (\d+\.\d+) >>>> Violation: (\d+\.\d+)', lines[3])
+        match = re.match(r'.*#.* (\w+) :>>>>> (\d+\.\d+) LL: (\d+\.\d+) ---  UL: (\d+\.\d+) >>>> Violation: (-?\d+\.\d+)', lines[3])
         if match:
             status, amount, ll, ul, violation = match.groups()
             nutrient_data = {

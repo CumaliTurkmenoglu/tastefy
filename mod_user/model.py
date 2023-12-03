@@ -16,44 +16,92 @@ class User(db.Model):
 #    Verify = db.Column(db.Integer)
 
 
-def insert(name,surname,username, password,type,date,age,gender,height,weight):#,verify):
+def insert(username, password,type):
+    from datetime import datetime
     try:
         modelUsers = User()
-        # modelUserCompany=UserCompany()
-        modelUsers.name = name
-        modelUsers.surname = surname
         modelUsers.username = username
         modelUsers.password = password
         modelUsers.type = type
-        modelUsers.date = date
-        modelUsers.age = age
-        modelUsers.gender = gender
-        modelUsers.height = height
-        modelUsers.weight = weight
-#        modelUsers.verify = verify
-
+        modelUsers.date = datetime.today().date()
         db.session.add(modelUsers)
         db.session.commit()
-        return True
-    except: return False
+        auto_incremented_id = modelUsers.id
+        return auto_incremented_id
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error: {e}")
+        return False
+
+
+def update_user(user_id, name=None, surname=None, age=None, gender=None, height=None, weight=None):
+    try:
+        user = getUserById(user_id)
+        if user:
+            if name is not None:
+                user.name = name
+            if surname is not None:
+                user.surname = surname
+            if age is not None:
+                user.age = age
+            if gender is not None:
+                user.gender = gender
+            if height is not None:
+                user.height = height
+            if weight is not None:
+                user.weight = weight
+            db.session.commit()
+            return True
+        else:
+            print(f"User with user ID {user_id} not found.")
+            return False
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error: {e}")
+        return False
+
 
 def getUserById(id):
-    db.metadata.clear()
-    user = User.query.filter(User.id == id).one_or_none()
-    return user
+    try:
+        db.metadata.clear()
+        user = User.query.filter(User.id == id).one_or_none()
+        return user
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error: {e}")
+        return False
+
 
 def getUserByUserName(userName):
-    db.metadata.clear()
-    return User.query.filter(User.username == userName).one_or_none()
+    try:
+        db.metadata.clear()
+        return User.query.filter(User.username == userName).one_or_none()
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error: {e}")
+        return False
+
 
 from  werkzeug.security import check_password_hash
 def check_login(userName,password):
-    db.metadata.clear()
-    return check_password_hash(getUserByUserName(userName).password , password)
+    try:
+        db.metadata.clear()
+        return check_password_hash(getUserByUserName(userName).password , password)
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error: {e}")
+        return False
+
 
 def getRoleByUserName(userName):
-    db.metadata.clear()
-    return User.query.filter(User.username ==userName).one_or_none().type
+    try:
+        db.metadata.clear()
+        return User.query.filter(User.username ==userName).one_or_none().type
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error: {e}")
+        return False
+
 
 def updateRole(user,type):
     db.metadata.clear()
@@ -61,17 +109,32 @@ def updateRole(user,type):
         user.type = type
         db.session.commit()
         return True
-    except: return False
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error: {e}")
+        return False
+
 
 def getUserNameById(id):
-    db.metadata.clear()
-    name = User.query.filter(User.id == id).one_or_none().name
-    return name
+    try:
+        db.metadata.clear()
+        name = User.query.filter(User.id == id).one_or_none().name
+        return name
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error: {e}")
+        return False
+
 
 def getUserIdByUserName(userName):
-    db.metadata.clear()
-    id = User.query.filter(User.username == userName).one_or_none().id
-    return id
+    try:
+        db.metadata.clear()
+        id = User.query.filter(User.username == userName).one_or_none().id
+        return id
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error: {e}")
+        return False
 
 #
 # def check_verify(email):

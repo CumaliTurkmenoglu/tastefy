@@ -19,9 +19,11 @@ import mysql.connector  # Import the MySQL connector library
 #                                       )
 # tunnel.start()
 
-app = Flask(__name__)
-jwt = JWTManager(app)
 
+from flask_cors import CORS
+app = Flask(__name__)
+CORS(app, resources={r"/*": {"origins": "*"}})
+jwt = JWTManager(app)
 # Configure the SQLAlchemy database URI
 app.config['SECRET_KEY'] = "KFAŞLKDJAFIDSFcnzndklsfjsdfjs"
 app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+mysqlconnector://{DB_USERNAME}:{DB_PASSWORD}@{HOST}:{PORT}/{DB_NAME}'
@@ -48,13 +50,13 @@ app.register_blueprint(mod_user,url_prefix='/auth')
 app.register_blueprint(mod_menu,url_prefix='/menu')
 
 from flask import jsonify
-from mod_foods.model import getFoodsByCategory
+from mod_foods.model import get_foods_by_category
 @app.route('/')
 def index():
     try:
         # Start a transaction
         with db.session.begin_nested():
-            foods = getFoodsByCategory(1)
+            foods = get_foods_by_category(1)
             return jsonify({'Data': {'Name': foods.name}})
     except Exception as e:
         # Handle exceptions and roll back the transaction
