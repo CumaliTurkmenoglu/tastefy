@@ -33,7 +33,7 @@ def get_foods_by_case_id(case_id=1):
         return False
 
 
-def getFoodById(foodId):
+def get_food_by_id(foodId):
     try:
         db.metadata.clear()
         food = Foods.query.filter(Foods.id == foodId).first()
@@ -44,7 +44,7 @@ def getFoodById(foodId):
         return False
 
 
-def getFoodByIds(foodIds):
+def get_food_by_ids(foodIds):
     try:
         db.metadata.clear()
         foods = Foods.query.filter(Foods.id.in_(foodIds)).all()
@@ -55,7 +55,7 @@ def getFoodByIds(foodIds):
         print(f"Error: {e}")
         return False
 
-def getFoodByName(foodName):
+def get_food_by_name(foodName):
     try:
         db.metadata.clear()
         foods = Foods.query.filter(Foods.name == foodName).all()

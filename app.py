@@ -19,9 +19,11 @@ import mysql.connector  # Import the MySQL connector library
 #                                       )
 # tunnel.start()
 
-app = Flask(__name__)
-jwt = JWTManager(app)
 
+from flask_cors import CORS
+app = Flask(__name__)
+CORS(app, resources={r"/*": {"origins": "*"}})
+jwt = JWTManager(app)
 # Configure the SQLAlchemy database URI
 app.config['SECRET_KEY'] = "KFAŞLKDJAFIDSFcnzndklsfjsdfjs"
 app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+mysqlconnector://{DB_USERNAME}:{DB_PASSWORD}@{HOST}:{PORT}/{DB_NAME}'

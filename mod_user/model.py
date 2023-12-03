@@ -34,9 +34,9 @@ def insert(username, password,type):
         return False
 
 
-def update_user(user_name, name=None, surname=None, age=None, gender=None, height=None, weight=None):
+def update_user(user_id, name=None, surname=None, age=None, gender=None, height=None, weight=None):
     try:
-        user = getUserByUserName(user_name)
+        user = getUserById(user_id)
         if user:
             if name is not None:
                 user.name = name
@@ -53,7 +53,7 @@ def update_user(user_name, name=None, surname=None, age=None, gender=None, heigh
             db.session.commit()
             return True
         else:
-            print(f"User with username {user_name} not found.")
+            print(f"User with user ID {user_id} not found.")
             return False
     except Exception as e:
         db.session.rollback()

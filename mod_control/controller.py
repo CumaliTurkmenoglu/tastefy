@@ -1,41 +1,70 @@
 from flask import Blueprint,request,jsonify,abort
 from flask_jwt_extended import jwt_required,get_jwt_identity
 
-
 mod_controller = Blueprint('control',__name__)
-
-
 
 @mod_controller.route('/get_unlabelled_foods', methods=['POST'])
 @jwt_required()
 def getUnlabelledFoods():
     if request.method == "POST":
-        from mod_user_foods.model import  getUnlabelledFoodsByUserId
+        from mod_user_foods.model import  get_unlabelled_foods_by_user_id
+        from mod_food_ingredients.model import get_food_ingredient_by_food_id, get_ingredients_by_food_ids
+        from mod_food_nutrients.model import get_nutrients_by_food_id, get_nutrients_by_food_ids
         import json
-        req_json = request.json
-        current_user = get_jwt_identity()
-#        current_user = current_user.split("*")
-        userId = req_json['userId']
+        from mod_user.controller import protected
+        current_user = protected(get_jwt_identity())
+        user_id=current_user[0].json["user_id"]
 
-        dict_ = {'Data': []}
-        for i in getUnlabelledFoodsByUserId(userId):
-            foods_dict = {'id':'',
-                            'userId':'',
-                            'userName':'',
-                            'foodId':'',
-                            'foodName':'',
-                            'preference':''
-                         }
+        foods=get_unlabelled_foods_by_user_id(user_id)
+#        food_ids= [food.foodId for food in foods]
+        from flask import jsonify
 
-            foods_dict['id']= i.id
-            foods_dict['userId']= i.userId
-            foods_dict['userName']= i.userName
-            foods_dict['foodId']= i.foodId
-            foods_dict['foodName']= i.foodName
-            foods_dict['preference'] = i.preference
+        # Create dictionaries to organize the data
+        food_dict = {}
+        nutrients_dict = {}
+        ingredients_dict = {}
 
-            dict_['Data'].append(foods_dict)
-        return jsonify(json.loads(json.dumps({'Data':dict_['Data']},default=str)))
+        for food_id, food_name, preference, nutrient_name, nutrient_quantity, ingredient_name, ingredient_quantity, unit_name in foods:
+            if food_id not in food_dict:
+                food_dict[food_id] = {
+                    'id': food_id,
+                    'name': food_name,
+                    'preference': preference,
+                    'nutrients': [],
+                    'ingredients': []
+                }
+
+            # Add nutrient information
+            nutrient_key = (food_id, nutrient_name, unit_name)
+            if nutrient_key not in nutrients_dict:
+                nutrients_dict[nutrient_key] = {
+                    'name': nutrient_name,
+                    'quantity': nutrient_quantity,
+                    'unit': unit_name
+                }
+                food_dict[food_id]['nutrients'].append(nutrients_dict[nutrient_key])
+
+            # Add ingredient information
+            ingredient_key = (food_id, ingredient_name)
+            if ingredient_key not in ingredients_dict:
+                ingredients_dict[ingredient_key] = {
+                    'name': ingredient_name,
+                    'quantity': ingredient_quantity
+                }
+                food_dict[food_id]['ingredients'].append(ingredients_dict[ingredient_key])
+
+        # Convert the dictionary to a list to get the final JSON object
+        food_list = list(food_dict.values())
+
+        # Convert the list to a JSON object
+        import json
+        food_json = json.dumps(food_list, indent=2)
+
+        # Convert the list to a JSON object
+        import json
+        food_json = json.dumps(food_list, indent=2)
+
+        return food_json#jsonify(json.loads(json.dumps({'Data':dict_['Data']},default=str)))
 
 
 @mod_controller.route('/get_foods', methods=['POST'])
@@ -45,10 +74,7 @@ def getFoods():
         from mod_foods.model import get_foods_by_category
         import json
         req_json = request.json
-        current_user = get_jwt_identity()
-        current_user = current_user.split("*")
         foodGroupId = req_json['foodGroupId']
-
         dict_ = {'Data': []}
         for i in get_foods_by_category(foodGroupId):
             foods_dict = {'id':'',
@@ -95,12 +121,12 @@ def set_food_preference():
         from mod_user_foods.model import  set_food_preference
         import json
         req_json = request.json
-        current_user = get_jwt_identity()
-#        current_user = current_user.split("*")
-        userId = req_json['userId']
+        from mod_user.controller import protected
+        current_user = protected(get_jwt_identity())
+        user_id=current_user[0].json["user_id"]
         foodId = req_json['foodId']
         preference = req_json['preference']
-        insert=set_food_preference(userId,foodId,preference)
+        insert=set_food_preference(user_id,foodId,preference)
         if insert:
             return jsonify({'Status': 'Success',
                             'Message': 'The preference has been set for the food.'})

@@ -99,9 +99,9 @@ def extractObjectives(obj : str):
 
 def extractFoodNamesAndObjValues(menu):
     import json
-    from mod_foods.model import getFoodById, getFoodByIds
+    from mod_foods.model import get_food_by_id, get_food_by_ids
     food_ids = [int(id) for id in menu.foodIds.strip("'").split(',')]
-    foods_with_links= getFoodByIds(food_ids)
+    foods_with_links= get_food_by_ids(food_ids)
     food_items = menu.foodNames.rstrip(', ').split(', ')
     foods = []
     for i, food_item in enumerate(food_items):
