@@ -57,7 +57,7 @@ def login():
             return jsonify(message="Bad Email or Password"), 401
 
     else:
-        return jsonify(message="Bad Email or Password"), 401
+        return jsonify(message="Bad Email or Password!"), 401
 
 
 
