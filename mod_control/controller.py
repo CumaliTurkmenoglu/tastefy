@@ -58,11 +58,7 @@ def getUnlabelledFoods():
 
         # Convert the list to a JSON object
         import json
-        food_json = json.dumps(food_list, indent=2)
-
-        # Convert the list to a JSON object
-        import json
-        food_json = json.dumps(food_list, indent=2)
+        food_json = json.dumps(food_list, indent=2, ensure_ascii=False)
 
         return food_json#jsonify(json.loads(json.dumps({'Data':dict_['Data']},default=str)))
 
