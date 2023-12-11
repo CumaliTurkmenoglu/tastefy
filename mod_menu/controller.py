@@ -34,7 +34,9 @@ def getUnlabelledMenus():
             menu_dict["userId"] = i.userId
             menu_dict["violated"] = i.violated
             menu_dict["objectives"] = extractObjectives(i.objectives) #as list
-            menu_dict["foods"] = extractFoodNamesAndObjValues(i)
+            breakfast, lunchdinner= extractFoodNamesAndObjValues(i)
+            menu_dict["breakfast"] = breakfast
+            menu_dict["lunchdinner"] = lunchdinner
             menu_dict["nutrients"] = extractNutrientValues(i)
 
             dict_["Menus"].append(menu_dict)

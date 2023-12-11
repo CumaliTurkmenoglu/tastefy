@@ -111,16 +111,48 @@ def get_user_foods_by_user_id_and_food_id(userId, foodId):
 def set_food_preference(userId, foodId, preference):
         try:
             user_food = get_user_foods_by_user_id_and_food_id(userId,foodId)
-            user_food.userId= userId
-            user_food.foodId= foodId
-            user_food.preference= preference
-            db.session.commit()
-            return True
+            if user_food:
+                user_food.userId= userId
+                user_food.foodId= foodId
+                user_food.preference= preference
+                db.session.commit()
+                return True
+            else:
+                from mod_foods.model import get_food_by_id
+                from mod_user.model import getUserById
+                from mod_user_foods.model import UserFoods
+                user_food=UserFoods()
+                food=get_food_by_id(foodId)
+                user_food.userId = userId
+                user_food.foodId = foodId
+                user_food.foodName = food.name
+                user_food.userName = getUserById(userId).name
+                user_food.preference = preference
+                db.session.add(user_food)
+                db.session.commit()
+                return True
         except Exception as e:
             db.session.rollback()
             print(f"Error: {e}")
             return False
 
+
+def reset_food_preference(userId, foodId):
+        try:
+            user_food = get_user_foods_by_user_id_and_food_id(userId,foodId)
+            if user_food:
+                user_food.userId= userId
+                user_food.foodId= foodId
+                user_food.preference= None
+#just update                db.session.delete(user_food)
+                db.session.commit()
+                return True
+            else:
+                return False
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error: {e}")
+            return False
 
 
 

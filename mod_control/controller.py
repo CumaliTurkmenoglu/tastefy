@@ -130,4 +130,63 @@ def set_food_preference():
             return jsonify({'Status' : 'Fail',
                             'Message': 'The preference couldn\'t be set.'})
 
+@mod_controller.route('/set_menu_preference', methods=['POST'])
+@jwt_required()
+def set_menu_preference():
+    if request.method == "POST":
+        from mod_chosen_menu.model import  set_menu_preference
+        import json
+        req_json = request.json
+        from mod_user.controller import protected
+        current_user = protected(get_jwt_identity())
+        user_id=current_user[0].json["user_id"]
+        menuId = req_json['menuId']
+        preference = req_json['preference']
+        insert=set_menu_preference(user_id,menuId,preference)
+        if insert:
+            return jsonify({'Status': 'Success',
+                            'Message': 'The preference has been set for the Menu.'})
+        else:
+            return jsonify({'Status' : 'Fail',
+                            'Message': 'The preference couldn\'t be set.'})
+
+
+
+@mod_controller.route('/reset_food_preference', methods=['POST'])
+@jwt_required()
+def reset_food_preference():
+    if request.method == "POST":
+        from mod_user_foods.model import  reset_food_preference
+        import json
+        req_json = request.json
+        from mod_user.controller import protected
+        current_user = protected(get_jwt_identity())
+        user_id=current_user[0].json["user_id"]
+        foodId = req_json['foodId']
+        remove=reset_food_preference(user_id,foodId)
+        if remove:
+            return jsonify({'Status': 'Success',
+                            'Message': 'The preference has been deleted for the food.'})
+        else:
+            return jsonify({'Status' : 'Fail',
+                            'Message': 'The preference couldn\'t be deleted.'})
+
+@mod_controller.route('/reset_menu_preference', methods=['POST'])
+@jwt_required()
+def reset_menu_preference():
+    if request.method == "POST":
+        from mod_chosen_menu.model import  reset_menu_preference
+        import json
+        req_json = request.json
+        from mod_user.controller import protected
+        current_user = protected(get_jwt_identity())
+        user_id=current_user[0].json["user_id"]
+        menuId = req_json['menuId']
+        remove=reset_menu_preference(user_id,menuId)
+        if remove:
+            return jsonify({'Status': 'Success',
+                            'Message': 'The preference has been deleted for the Menu.'})
+        else:
+            return jsonify({'Status' : 'Fail',
+                            'Message': 'The preference couldn\'t be deleted.'})
 

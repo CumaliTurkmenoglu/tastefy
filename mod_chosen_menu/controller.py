@@ -1,2 +1,2 @@
 from flask import Blueprint
-mod_user = Blueprint('chosen_menu',__name__)
+mod_user = Blueprint('menu',__name__)

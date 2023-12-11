@@ -1,10 +1,10 @@
-# #SSH_USERNAME = 'u189214306_info'
-# #SSH_PASSWORD = 'Serhildancml.123'
-# HOST = '151.106.97.51'#'srv449.hstgr.io'
-# PORT = 3306
-# DB_USERNAME = 'u189214306_info'
-# DB_NAME = 'u189214306_usda2'
-# DB_PASSWORD = 'Serhildancml.123'
+SSH_USERNAME_HOSTINGER = 'u189214306_info'
+SSH_PASSWORD_HOSTINGER = 'Serhildancml.123'
+HOST_HOSTINGER = '151.106.97.51' #'srv449.hstgr.io'
+PORT_HOSTINGER = 3306
+DB_USERNAME_HOSTINGER = 'u189214306_info'
+DB_NAME_HOSTINGER = 'u189214306_usda2'
+DB_PASSWORD_HOSTINGER = 'Serhildancml.123'
 
 
 # How to import .sql db to pythonanywhere : https://help.pythonanywhere.com/pages/ImportingYourLocalDatabaseToPythonAnywhere/

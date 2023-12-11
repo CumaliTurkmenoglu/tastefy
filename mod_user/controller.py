@@ -1,7 +1,9 @@
-from flask import Blueprint,render_template,redirect,url_for,abort,request,jsonify,flash
+import time
+
+from flask import Blueprint,render_template,abort,request,jsonify,flash
 mod_user = Blueprint('auth',__name__)
 from  werkzeug.security import generate_password_hash
-from flask_jwt_extended import create_access_token,get_jwt_identity,jwt_required,decode_token,create_refresh_token
+from flask_jwt_extended import create_access_token,get_jwt,get_jwt_identity,jwt_required,decode_token,create_refresh_token
 from flask_httpauth import HTTPBasicAuth
 auth = HTTPBasicAuth()
 
@@ -49,7 +51,8 @@ def update_user():
         from mod_user.model import update_user
         update=update_user(user_id, name,surname,age,gender,height,weight)
         if update:
-            return jsonify(message='User updated succesfully'), 201
+#            refresh()
+            return jsonify({"msg": "User updated succesfully", "exp": get_jwt()['exp']-time.time()}), 201
         else:
             return abort(404)
 
@@ -72,9 +75,9 @@ def login():
             role = str(getRoleByUserName(username))
             access_token = create_access_token(identity=username+"*"+role +"*"+userId)
             refresh_token = create_refresh_token(identity=username+"*"+role +"*"+userId)
-            return jsonify(message="Login Succeeded!", access_token=access_token,refresh_token=refresh_token), 201
+            return jsonify(message="Login Succeeded!", access_token=access_token,refresh_token=refresh_token), 200
         else:
-            return jsonify(message="Bad Email or Password"), 401
+            return jsonify({"msg": "Bad username or password"}), 401
 
     else:
         return jsonify(message="Bad Email or Password!"), 401

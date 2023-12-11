@@ -16,8 +16,12 @@ def getUnlabelledMenusByUserId( userId):
     try:
         db.metadata.clear()
         from sqlalchemy import and_,func
-        from mod_chosen_menu.model import getChosenMenuIdsByUserId,ChosenMenu
-        menus = Menus.query.join(ChosenMenu,ChosenMenu.menuId == Menus.id ).filter(Menus.userId==userId).all()
+        from mod_chosen_menu.model import getChosenMenusIdsByUserId,ChosenMenu
+        #menus = Menus.query.join(ChosenMenu,ChosenMenu.menuId != Menus.id).filter(Menus.userId==userId).all()
+        menus= (Menus.query
+                .outerjoin(ChosenMenu, ChosenMenu.menuId == Menus.id).filter(ChosenMenu.menuId.is_(None))
+                .filter(Menus.userId == userId)
+                .all())
         #Menus.query.filter(and_(Menus.userId == userId, ~Menus.id.in_(getChosenMenuIdsByUserId(userId)))).all()
         if menus:
             return menus
@@ -82,8 +86,6 @@ def getFoodNamesByMenuId(menuId):
         print(f"Error: {e}")
         return False
 
-
-
 def extractObjectives(obj : str):
     import re
     import json
@@ -103,7 +105,8 @@ def extractFoodNamesAndObjValues(menu):
     food_ids = [int(id) for id in menu.foodIds.strip("'").split(',')]
     foods_with_links= get_food_by_ids(food_ids)
     food_items = menu.foodNames.rstrip(', ').split(', ')
-    foods = []
+    breakfast = []
+    lunchdinner = []
     for i, food_item in enumerate(food_items):
         parts = food_item.split()
         cost = float(parts[-1])
@@ -121,8 +124,11 @@ def extractFoodNamesAndObjValues(menu):
             "link":foods_with_links[i].picUrl,
             "objectives": objectives
         }
-        foods.append(food)
-    return foods
+        if foods_with_links[i].foodGroupId in [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14]:
+            breakfast.append(food)
+        else:
+            lunchdinner.append(food)
+    return breakfast, lunchdinner
 
 def extractNutrientValues(menu):
     nutrients = {}
